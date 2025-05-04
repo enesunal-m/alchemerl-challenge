@@ -3,22 +3,9 @@ import { checkImg } from "../../utils/funcs";
 import { svg2img } from "../../utils/randomAvatar";
 import { removeW } from "../../utils/funcs";
 
-const TopToken = ({ itemData }) => {
+const TopToken = ({ itemData, onTokenSelect }) => {
   const [imageExists, setImageExists] = useState(false);
   const tokenRef = useRef(null);
-
-  // useEffect(() => {
-  //   checkImg(
-  //     `https://assets.thetatoken.org/tokens/${itemData.symbol.toLowerCase()}.png`
-  //   )
-  //     .then((exists) => {
-  //       setImageExists(exists);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error checking image:", error);
-  //       setImageExists(false);
-  //     });
-  // }, [itemData.symbol]);
 
   useEffect(() => {
     const isOverflowed =
@@ -30,8 +17,20 @@ const TopToken = ({ itemData }) => {
     }
   }, [itemData.symbol]);
 
+  const handleClick = () => {
+    if (onTokenSelect && itemData.id) {
+      console.log("Top token clicked:", itemData);
+      onTokenSelect(itemData);
+    }
+  };
+
   return (
-    <div ref={tokenRef} className="token-item font-header top-token">
+    <div
+      ref={tokenRef}
+      className="token-item font-header top-token"
+      onClick={handleClick}
+      style={{ cursor: itemData.id ? "pointer" : "default" }}
+    >
       <div className="token-element">{itemData.num}</div>
       <img
         className="token-element"

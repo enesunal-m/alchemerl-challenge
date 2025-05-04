@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -9,15 +9,30 @@ import {
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import { TVChartContainer } from "./common/TVChartContainer";
 import Table from "./Table";
+import TokenDetail from "./TokenDetail";
 import "./style.css";
 
-const MainComponent = () => {
+const MainComponent = ({ initialSelectedToken }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [selectedToken, setSelectedToken] = useState(null);
   const theme = useTheme();
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md")); // Check if screen is larger than medium
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("md"));
+
+  // Update the local state when initialSelectedToken changes
+  useEffect(() => {
+    if (initialSelectedToken) {
+      setSelectedToken(initialSelectedToken);
+      console.log("MainComponent received token:", initialSelectedToken);
+    }
+  }, [initialSelectedToken]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleTokenSelect = (token) => {
+    console.log("Token selected in MainComponent:", token);
+    setSelectedToken(token);
   };
 
   return (
@@ -35,8 +50,18 @@ const MainComponent = () => {
         xs={isMenuOpen ? 9 : 12}
         sx={{ transition: "width 0.5s", position: "relative" }}
       >
-        <TVChartContainer height={isMenuOpen ? 70 : 70} />
-        <Table height={isMenuOpen ? 70 : 90} />
+        {selectedToken != null ? (
+          <TVChartContainer
+            height={isMenuOpen ? 70 : 70}
+            symbol={selectedToken}
+          />
+        ) : (
+          <TVChartContainer height={isMenuOpen ? 70 : 70} symbol={"TFUEL"} />
+        )}
+        <Table
+          height={isMenuOpen ? 70 : 90}
+          onTokenSelect={handleTokenSelect}
+        />
         {/* Collapse button */}
         {isLargeScreen && (
           <button className="menubutton" onClick={toggleMenu}>
@@ -45,8 +70,12 @@ const MainComponent = () => {
         )}
       </Grid>
 
-      {/* Menu or additional content */}
-      {isMenuOpen && <Grid item xs={3} className="font-header"></Grid>}
+      {/* Token detail panel */}
+      {isMenuOpen && (
+        <Grid item xs={3} className="font-header">
+          <TokenDetail selectedToken={selectedToken} />
+        </Grid>
+      )}
     </Grid>
   );
 };

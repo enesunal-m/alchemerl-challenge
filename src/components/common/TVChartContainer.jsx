@@ -1,109 +1,58 @@
-import React, { useEffect, useRef, useState } from "react";
-import { widget } from "../../charting_library/charting_library.esm";
+import React, { useEffect, useRef } from "react";
 
-function getLanguageFromURL() {
-  const regex = new RegExp("[\\?&]lang=([^&#]*)");
-  const results = regex.exec(window.location.search);
-  return results === null
-    ? null
-    : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-export const TVChartContainer = ({ height }) => {
-  const chartContainerRef = useRef();
-  const [scriptLoaded, setScriptLoaded] = useState(false);
+export function TVChartContainer({
+  height = 60, // height in viewport-height units
+  selectedToken = { symbol: "THETA" }, // default symbol
+  locale = "en",
+  interval = "D", // daily bars
+}) {
+  const containerRef = useRef();
+  let symbol = selectedToken.symbol;
 
   useEffect(() => {
+    symbol = selectedToken.symbol;
+    if (selectedToken.name && selectedToken.name.includes("Wrapped")) {
+      symbol = symbol.replace("W", "");
+    }
+
     const script = document.createElement("script");
-    script.src = "datafeeds/udf/dist/bundle.js";
+    script.src = "https://s3.tradingview.com/tv.js";
     script.async = true;
-
-    script.onload = () => {
-      setScriptLoaded(true);
-    };
-
     document.body.appendChild(script);
 
+    script.onload = () => {
+      if (window.TradingView) {
+        new window.TradingView.widget({
+          container_id: containerRef.current.id,
+          autosize: true,
+          symbol: `${symbol}USD`, // e.g. "THETAUSD"
+          interval, // "D", "60", "30", etc.
+          timezone: "Etc/UTC",
+          theme: "dark",
+          style: "1", // candles
+          locale,
+          toolbar_bg: "#1e1e1e",
+          allow_symbol_change: true,
+          details: true,
+          hotlist: true,
+          withdateranges: true,
+        });
+      }
+    };
+
+    // 3) cleanup when unmounting
     return () => {
       document.body.removeChild(script);
+      // Note: the widget itself will automatically be removed when its container
+      // is removed from the DOM by React.
     };
-  }, []);
-
-  const defaultProps = {
-    symbol: "AAPL",
-    interval: "D",
-    datafeedUrl: "https://demo_feed.tradingview.com",
-    // datafeedUrl: "http://localhost:5000/api",
-    libraryPath: "/charting_library/",
-    chartsStorageUrl: "https://saveload.tradingview.com",
-    chartsStorageApiVersion: "1.1",
-    clientId: "tradingview.com",
-    userId: "public_user_id",
-    theme: "dark",
-    fullscreen: false,
-    autosize: true,
-    studiesOverrides: {},
-  };
-
-  useEffect(() => {
-    if (scriptLoaded) {
-      const widgetOptions = {
-        symbol: defaultProps.symbol,
-        // BEWARE: no trailing slash is expected in feed URL
-        datafeed: new window.Datafeeds.UDFCompatibleDatafeed(
-          defaultProps.datafeedUrl
-        ),
-        interval: defaultProps.interval,
-        container: chartContainerRef.current,
-        library_path: defaultProps.libraryPath,
-        theme: "dark",
-        locale: getLanguageFromURL() || "en",
-        disabled_features: ["use_localstorage_for_settings"],
-        enabled_features: ["study_templates"],
-        charts_storage_url: defaultProps.chartsStorageUrl,
-        charts_storage_api_version: defaultProps.chartsStorageApiVersion,
-        client_id: defaultProps.clientId,
-        user_id: defaultProps.userId,
-        fullscreen: defaultProps.fullscreen,
-        autosize: defaultProps.autosize,
-        studies_overrides: defaultProps.studiesOverrides,
-      };
-
-      const tvWidget = new widget(widgetOptions);
-
-      tvWidget.onChartReady(() => {
-        tvWidget.headerReady().then(() => {
-          const button = tvWidget.createButton();
-          button.setAttribute("title", "Click to show a notification popup");
-          button.classList.add("apply-common-tooltip");
-          button.addEventListener("click", () =>
-            tvWidget.showNoticeDialog({
-              title: "Notification",
-              body: "TradingView Charting Library API works correctly",
-              callback: () => {
-                console.log("Noticed!");
-              },
-            })
-          );
-
-          button.innerHTML = "Check API";
-        });
-      });
-
-      return () => {
-        tvWidget.remove();
-      };
-    }
-  }, [scriptLoaded]);
-
-  useEffect(() => {}, []);
+  }, [selectedToken, interval, locale]);
 
   return (
     <div
-      ref={chartContainerRef}
-      className={"TVChartContainer"}
-      id="tv_chart_container"
-      style={{ height: height + "vh" }}
+      id={`tv_chart_${symbol}`}
+      ref={containerRef}
+      style={{ width: "100%", height: `${height}vh` }}
     />
   );
-};
+}

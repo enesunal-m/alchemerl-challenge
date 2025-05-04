@@ -5,24 +5,18 @@ import { green } from "@mui/material/colors";
 import { removeW } from "../../utils/funcs";
 import "./style.css";
 
-const TokenRow = ({ data }) => {
+const TokenRow = ({ data, onTokenSelect }) => {
   const [imageExists, setImageExists] = useState(false);
 
-  // useEffect(() => {
-  //   checkImg(
-  //     `https://assets.thetatoken.org/tokens/${data.symbol.toLowerCase()}.png`
-  //   )
-  //     .then((exists) => {
-  //       setImageExists(exists);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error checking image:", error);
-  //       setImageExists(false);
-  //     });
-  // }, [data.symbol]);
+  const handleClick = () => {
+    if (onTokenSelect) {
+      console.log("Token row clicked:", data);
+      onTokenSelect(data);
+    }
+  };
 
   return (
-    <tr>
+    <tr onClick={handleClick} style={{ cursor: "pointer" }}>
       <td
         style={{
           display: "flex",

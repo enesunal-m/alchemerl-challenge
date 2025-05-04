@@ -7,8 +7,9 @@ import TokenTable from "./TokenTable";
 import TopTokenList from "./common/TopTokenList";
 import "./style.css";
 import { createTheme, useMediaQuery } from "@mui/material";
+import { removeW } from "../utils/funcs";
 
-const TokenList = () => {
+const TokenList = ({ onTokenSelect }) => {
   const theme = createTheme({
     // Define the theme within the component
     breakpoints: {
@@ -31,21 +32,24 @@ const TokenList = () => {
   useEffect(() => {
     // Dispatch the action to fetch token data
     dispatch(fetchTokenListRequest());
-  }, [fetchTokenListRequest]);
+  }, [dispatch]);
 
   const tokenList = useSelector((state) => state.tokenReducer.tokenList);
   const loading = useSelector((state) => state.tokenReducer.loading);
   const error = useSelector((state) => state.tokenReducer.error);
 
-  const [filteredTokenList, setFilteredTokenList] = useState([...tokenList]);
+  const [filteredTokenList, setFilteredTokenList] = useState([]);
 
-  const sortedTokenList = tokenList.sort(
-    (a, b) =>
-      (b.volume24HrsETH * 1) / (b.tradeVolumeETH * 1) -
-      (a.volume24HrsETH * 1) / (a.tradeVolumeETH * 1)
-  );
+  // Create sorted and limited token list for the top tokens display
+  const sortedTokenList = tokenList
+    ? [...tokenList].sort(
+        (a, b) =>
+          (b.volume24HrsETH * 1) / (b.tradeVolumeETH * 1) -
+          (a.volume24HrsETH * 1) / (a.tradeVolumeETH * 1),
+      )
+    : [];
 
-  // Slice the sorted token list to display only the first 7 items
+  // This is the missing part - create limitedTokenList
   const limitedTokenList = sortedTokenList.slice(0, 10).map((item, index) => {
     return {
       num: "#" + (index + 1),
@@ -64,7 +68,7 @@ const TokenList = () => {
   const [text, setText] = useState("Select Token/Contract Address ⌄");
 
   useEffect(() => {
-    setFilteredTokenList([...tokenList]);
+    setFilteredTokenList(tokenList || []);
   }, [tokenList, isEditing]);
 
   const handleEditClick = () => {
@@ -73,13 +77,13 @@ const TokenList = () => {
 
   const handleInputChange = (e) => {
     setFilteredTokenList(
-      [...tokenList].filter((obj) => {
+      [...(tokenList || [])].filter((obj) => {
         // Check if any of the object's properties include the text
         return (
           obj.symbol.toLowerCase().includes(e.target.value.toLowerCase()) ||
           obj.id.toLowerCase().includes(e.target.value.toLowerCase())
         );
-      })
+      }),
     );
   };
 
@@ -94,7 +98,7 @@ const TokenList = () => {
 
   const handleSaveClick = () => {
     setIsEditing(false);
-    setFilteredTokenList([...tokenList]);
+    setFilteredTokenList(tokenList || []);
     setText("Select Token/Contract Address ⌄");
     // Perform any save operation with the edited text here
   };
@@ -113,7 +117,10 @@ const TokenList = () => {
         alt="Token List Logo"
         className="token-list-logo"
       />
-      <TopTokenList tokenList={limitedTokenList} />
+      <TopTokenList
+        tokenList={limitedTokenList}
+        onTokenSelect={onTokenSelect}
+      />
       <div
         className="dropdown-container font-header"
         style={{ position: "relative" }}
@@ -125,7 +132,7 @@ const TokenList = () => {
             className="dropdown-button"
             onChange={handleInputChange}
             style={{ fontFamily: "altivo" }}
-            autoFocus // Automatically focus on the input field when it appears
+            autoFocus
           />
         ) : (
           <button
@@ -153,8 +160,13 @@ const TokenList = () => {
               left: isLargeScreen ? "-13vw" : "-37vw",
             }}
           >
-            {/* Add your div content here */}
-            <TokenTable tokenData={filteredTokenList} />
+            <TokenTable
+              tokenData={filteredTokenList}
+              onTokenSelect={(token) => {
+                onTokenSelect && onTokenSelect(token);
+                handleSaveClick();
+              }}
+            />
           </div>
         )}
       </div>
