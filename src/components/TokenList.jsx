@@ -5,32 +5,30 @@ import TokenListLogo from "../assets/img/Tokenbar-Logo.png";
 import TopToken from "./common/TopToken";
 import TokenTable from "./TokenTable";
 import TopTokenList from "./common/TopTokenList";
-import "./style.css";
 import { createTheme, useMediaQuery } from "@mui/material";
 import { removeW } from "../utils/funcs";
+import { svg2img } from "../utils/randomAvatar";
+import "./style.css";
 
-const TokenList = ({ onTokenSelect }) => {
+const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
   const theme = createTheme({
-    // Define the theme within the component
     breakpoints: {
       values: {
         xs: 0,
         sm: 600,
         md: 960,
-        lg: 1160, // Change the value of lg breakpoint here
+        lg: 1160,
         xl: 1560,
       },
     },
   });
 
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg")); // Use the theme with useMediaQuery
-  const MediumScreen = useMediaQuery(theme.breakpoints.down("lg")); // Use the theme with useMediaQuery
-
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const MediumScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const [isMediumScreen, setIsMediumScreen] = useState(MediumScreen);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    // Dispatch the action to fetch token data
     dispatch(fetchTokenListRequest());
   }, [dispatch]);
 
@@ -39,6 +37,9 @@ const TokenList = ({ onTokenSelect }) => {
   const error = useSelector((state) => state.tokenReducer.error);
 
   const [filteredTokenList, setFilteredTokenList] = useState([]);
+  const [selectedToken, setSelectedToken] = useState(initialSelectedToken);
+  const [isEditing, setIsEditing] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   // Create sorted and limited token list for the top tokens display
   const sortedTokenList = tokenList
@@ -49,7 +50,6 @@ const TokenList = ({ onTokenSelect }) => {
       )
     : [];
 
-  // This is the missing part - create limitedTokenList
   const limitedTokenList = sortedTokenList.slice(0, 10).map((item, index) => {
     return {
       num: "#" + (index + 1),
@@ -64,24 +64,33 @@ const TokenList = ({ onTokenSelect }) => {
     };
   });
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [text, setText] = useState("Select Token/Contract Address ⌄");
-
   useEffect(() => {
     setFilteredTokenList(tokenList || []);
-  }, [tokenList, isEditing]);
+  }, [tokenList]);
+
+  useEffect(() => {
+    if (initialSelectedToken) {
+      setSelectedToken(initialSelectedToken);
+    }
+  }, [initialSelectedToken]);
 
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
   const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    setSearchText(inputValue);
+
+    if (!tokenList) return;
+
     setFilteredTokenList(
-      [...(tokenList || [])].filter((obj) => {
-        // Check if any of the object's properties include the text
+      [...tokenList].filter((obj) => {
         return (
-          obj.symbol.toLowerCase().includes(e.target.value.toLowerCase()) ||
-          obj.id.toLowerCase().includes(e.target.value.toLowerCase())
+          obj.symbol.toLowerCase().includes(inputValue.toLowerCase()) ||
+          obj.id.toLowerCase().includes(inputValue.toLowerCase()) ||
+          (obj.name &&
+            obj.name.toLowerCase().includes(inputValue.toLowerCase()))
         );
       }),
     );
@@ -91,16 +100,20 @@ const TokenList = ({ onTokenSelect }) => {
 
   const handleClickOutside = (event) => {
     if (divRef.current && !divRef.current.contains(event.target)) {
-      // Clicked outside the div
       handleSaveClick();
     }
+  };
+
+  const handleTokenSelection = (token) => {
+    setSelectedToken(token);
+    handleSaveClick();
+    onTokenSelect && onTokenSelect(token);
   };
 
   const handleSaveClick = () => {
     setIsEditing(false);
     setFilteredTokenList(tokenList || []);
-    setText("Select Token/Contract Address ⌄");
-    // Perform any save operation with the edited text here
+    setSearchText("");
   };
 
   useEffect(() => {
@@ -109,6 +122,36 @@ const TokenList = ({ onTokenSelect }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Prepare the display for the selected token dropdown button
+  const getTokenDisplayText = () => {
+    if (!selectedToken) {
+      return "Select Token/Contract Address ⌄";
+    }
+
+    return (
+      <div className="selected-token-display">
+        {selectedToken.logo ? (
+          <img
+            src={`https://assets.thetatoken.org/tokens/${selectedToken.logo}`}
+            alt={selectedToken.symbol}
+            className="selected-token-icon"
+          />
+        ) : (
+          <img
+            src={svg2img(selectedToken)}
+            alt={selectedToken.symbol}
+            className="selected-token-icon"
+            style={{ borderRadius: "50%" }}
+          />
+        )}
+        <span className="selected-token-symbol">
+          {removeW(selectedToken.symbol)}
+        </span>
+        <span className="dropdown-arrow">⌄</span>
+      </div>
+    );
+  };
 
   return (
     <div className="tokenlist-background font-header">
@@ -119,7 +162,8 @@ const TokenList = ({ onTokenSelect }) => {
       />
       <TopTokenList
         tokenList={limitedTokenList}
-        onTokenSelect={onTokenSelect}
+        onTokenSelect={handleTokenSelection}
+        selectedToken={selectedToken}
       />
       <div
         className="dropdown-container font-header"
@@ -128,8 +172,9 @@ const TokenList = ({ onTokenSelect }) => {
         {isEditing ? (
           <input
             type="text"
-            placeholder={text}
-            className="dropdown-button"
+            value={searchText}
+            placeholder="Search by token name or address..."
+            className="dropdown-button dropdown-search"
             onChange={handleInputChange}
             style={{ fontFamily: "altivo" }}
             autoFocus
@@ -140,12 +185,13 @@ const TokenList = ({ onTokenSelect }) => {
             className="dropdown-button"
             style={{ overflow: "hidden", fontFamily: "altivo" }}
           >
-            {text}
+            {getTokenDisplayText()}
           </button>
         )}
         {isEditing && (
           <div
             ref={divRef}
+            className="dropdown-content"
             style={{
               position: "absolute",
               top: "calc(45px)",
@@ -153,19 +199,17 @@ const TokenList = ({ onTokenSelect }) => {
               width: isLargeScreen ? "60vw" : "100vw",
               backgroundColor: "#191919",
               padding: "10px",
-              borderRadius: "5px",
+              borderRadius: "0",
               zIndex: "50",
               color: "white",
-              border: `2px solid transparent`,
+              border: `1px solid #333`,
               left: isLargeScreen ? "-13vw" : "-37vw",
             }}
           >
             <TokenTable
               tokenData={filteredTokenList}
-              onTokenSelect={(token) => {
-                onTokenSelect && onTokenSelect(token);
-                handleSaveClick();
-              }}
+              onTokenSelect={handleTokenSelection}
+              selectedToken={selectedToken}
             />
           </div>
         )}

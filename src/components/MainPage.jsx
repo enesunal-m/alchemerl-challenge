@@ -3,6 +3,7 @@ import MainComponent from "./MainComponent";
 import { Header } from "./Header";
 import { TokenList } from "./TokenList";
 import Footer from "./Footer";
+import "./style.css";
 
 const MainPage = () => {
   const [selectedToken, setSelectedToken] = useState(null);
@@ -13,9 +14,12 @@ const MainPage = () => {
   };
 
   return (
-    <div>
+    <div className="app-container">
       <Header />
-      <TokenList onTokenSelect={handleTokenSelect} />
+      <TokenList
+        onTokenSelect={handleTokenSelect}
+        initialSelectedToken={selectedToken}
+      />
       <MainComponent initialSelectedToken={selectedToken} />
       <Footer />
     </div>

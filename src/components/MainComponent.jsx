@@ -36,15 +36,21 @@ const MainComponent = ({ initialSelectedToken }) => {
         <div
           className={`chart-container ${isMenuOpen ? "with-sidebar" : "full-width"}`}
         >
-          {selectedToken != null ? (
+          {selectedToken ? (
             <TVChartContainer selectedToken={selectedToken} />
           ) : (
-            <TVChartContainer selectedToken={"TFUEL"} />
+            <TVChartContainer selectedToken={{ symbol: "THETA" }} />
           )}
 
           {/* Toggle sidebar button - only visible on large screens */}
           {isLargeScreen && (
-            <button className="sidebar-toggle" onClick={toggleMenu}>
+            <button
+              className="sidebar-toggle"
+              onClick={toggleMenu}
+              aria-label={
+                isMenuOpen ? "Hide token details" : "Show token details"
+              }
+            >
               {isMenuOpen ? "›" : "‹"}
             </button>
           )}
@@ -60,7 +66,10 @@ const MainComponent = ({ initialSelectedToken }) => {
 
       {/* Full-width table row */}
       <div className="table-row">
-        <Table onTokenSelect={handleTokenSelect} />
+        <Table
+          onTokenSelect={handleTokenSelect}
+          selectedToken={selectedToken}
+        />
       </div>
     </div>
   );

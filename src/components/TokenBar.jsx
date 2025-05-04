@@ -31,7 +31,7 @@ const TokenBar = () => {
   const sortedTokenList = tokenList.sort(
     (a, b) =>
       (b.volume24HrsETH * 1) / (b.tradeVolumeETH * 1) -
-      (a.volume24HrsETH * 1) / (a.tradeVolumeETH * 1)
+      (a.volume24HrsETH * 1) / (a.tradeVolumeETH * 1),
   );
 
   // Slice the sorted token list to display only the first 7 items

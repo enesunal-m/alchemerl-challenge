@@ -9,7 +9,7 @@ import {
 } from "../utils/funcs";
 import "./style.css";
 
-const Table = ({ onTokenSelect }) => {
+const Table = ({ onTokenSelect, selectedToken }) => {
   const dispatch = useDispatch();
   const [hoveredRow, setHoveredRow] = useState(null);
 
@@ -61,6 +61,17 @@ const Table = ({ onTokenSelect }) => {
     }
   };
 
+  // Function to check if transaction involves the selected token
+  const isSelectedTokenTransaction = (transaction) => {
+    if (!selectedToken) return false;
+
+    const selectedSymbol = removeW(selectedToken.symbol).toLowerCase();
+    return (
+      transaction.symbol0.toLowerCase() === selectedSymbol ||
+      transaction.symbol1.toLowerCase() === selectedSymbol
+    );
+  };
+
   return (
     <div className="transactions-table-container">
       <div className="table-header">
@@ -88,10 +99,14 @@ const Table = ({ onTokenSelect }) => {
             ) : (
               filteredTransactions.map((rowData, index) => {
                 const isBuy = rowData.amount0In * 1;
+                const isSelected = isSelectedTokenTransaction(rowData);
+
                 return (
                   <tr
                     key={index}
-                    className={`transaction-row ${isBuy ? "buy-row" : "sell-row"} ${hoveredRow === index ? "hovered" : ""}`}
+                    className={`transaction-row ${isBuy ? "buy-row" : "sell-row"} ${
+                      hoveredRow === index ? "hovered" : ""
+                    } ${isSelected ? "selected-transaction" : ""}`}
                     onClick={() => handleRowClick(rowData)}
                     onMouseEnter={() => setHoveredRow(index)}
                     onMouseLeave={() => setHoveredRow(null)}
@@ -119,7 +134,27 @@ const Table = ({ onTokenSelect }) => {
                       )}
                     </td>
                     <td className="swap-col">
-                      {`${checkTokenSymbol(rowData.symbol0)} → ${checkTokenSymbol(rowData.symbol1)}`}
+                      <span
+                        className={
+                          rowData.symbol0.toLowerCase() ===
+                          removeW(selectedToken?.symbol.toLowerCase())
+                            ? "highlighted-token"
+                            : ""
+                        }
+                      >
+                        {checkTokenSymbol(rowData.symbol0)}
+                      </span>
+                      <span className="swap-arrow">→</span>
+                      <span
+                        className={
+                          rowData.symbol1.toLowerCase() ===
+                          removeW(selectedToken?.symbol.toLowerCase())
+                            ? "highlighted-token"
+                            : ""
+                        }
+                      >
+                        {checkTokenSymbol(rowData.symbol1)}
+                      </span>
                     </td>
                     <td className="amount-col">
                       {formatNumber(

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import TokenRow from "./common/TokenRow";
 import "./style.css";
 
-const TokenTable = ({ tokenData, onTokenSelect }) => {
+const TokenTable = ({ tokenData, onTokenSelect, selectedToken }) => {
   const [sortedData, setSortedData] = useState([...tokenData]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [hoveredRow, setHoveredRow] = useState(null);
 
   const sortData = (key) => {
     let direction = "asc";
@@ -38,7 +39,7 @@ const TokenTable = ({ tokenData, onTokenSelect }) => {
   const tableStyle = {
     backgroundColor: "#191919",
     overflowY: "auto",
-    maxHeight: "90vh",
+    maxHeight: "70vh",
     width: "100%",
     cursor: "pointer",
   };
@@ -96,13 +97,21 @@ const TokenTable = ({ tokenData, onTokenSelect }) => {
           </tr>
         </thead>
         <tbody style={{ backgroundColor: "black" }}>
-          {[...sortedData].map((rowData, index) => (
-            <TokenRow
-              data={rowData}
-              key={index}
-              onTokenSelect={onTokenSelect}
-            />
-          ))}
+          {[...sortedData].map((rowData, index) => {
+            // Check if this row is for the selected token
+            const isSelected = selectedToken && selectedToken.id === rowData.id;
+
+            return (
+              <TokenRow
+                data={rowData}
+                key={index}
+                onTokenSelect={onTokenSelect}
+                isSelected={isSelected}
+                onHover={(hovered) => setHoveredRow(hovered ? index : null)}
+                isHovered={hoveredRow === index}
+              />
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -14,6 +14,15 @@ const TokenDetail = ({ selectedToken }) => {
 
   console.log("Selected token details:", selectedToken);
 
+  // Calculate 24h change percentage
+  const changePercentage = (
+    ((selectedToken.volume24HrsETH * 1) / (selectedToken.tradeVolumeETH * 1)) *
+    100
+  ).toFixed(2);
+
+  // Determine if positive or negative for styling
+  const isPositive = parseFloat(changePercentage) >= 0;
+
   return (
     <div className="token-detail-container">
       <div className="token-detail-header">
@@ -30,7 +39,7 @@ const TokenDetail = ({ selectedToken }) => {
               height: "60px",
               borderRadius: selectedToken.logo ? "0" : "50%",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
-              border: "2px solid #2a2a2a",
+              border: "2px solid #333",
             }}
           />
         </div>
@@ -67,36 +76,30 @@ const TokenDetail = ({ selectedToken }) => {
 
       <div className="token-stat-change">
         <span className="token-stat-label">24h Change</span>
-        <span
-          className="token-stat-value-change"
-          style={{
-            color:
-              ((selectedToken.volume24HrsETH * 1) /
-                (selectedToken.tradeVolumeETH * 1)) *
-                100 >
-              0
-                ? "#38d9a9"
-                : "#ff6b6b",
-            fontWeight: "bold",
-          }}
-        >
-          {(
-            ((selectedToken.volume24HrsETH * 1) /
-              (selectedToken.tradeVolumeETH * 1)) *
-            100
-          ).toFixed(2)}
-          %
-        </span>
+        <div className="token-change-display">
+          <span
+            className={`token-stat-value-change ${isPositive ? "positive" : "negative"}`}
+          >
+            {isPositive ? "+" : ""}
+            {changePercentage}%
+          </span>
+          <span
+            className={`change-indicator ${isPositive ? "positive" : "negative"}`}
+          >
+            <i className={`fa fa-arrow-${isPositive ? "up" : "down"}`}></i>
+          </span>
+        </div>
       </div>
 
       <div className="token-detail-id">
-        <span className="token-id-label">Token ID:</span>
+        <span className="token-id-label">Contract Address</span>
         <span className="token-id-value">{selectedToken.id}</span>
         <button
           className="copy-button"
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             navigator.clipboard.writeText(selectedToken.id);
-            alert("Token ID copied to clipboard");
+            alert("Contract address copied to clipboard");
           }}
           title="Copy to clipboard"
         >

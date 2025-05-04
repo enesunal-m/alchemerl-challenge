@@ -272,39 +272,40 @@
     font-weight: 400;
 }
 
+/* Token Detail Container */
 .token-detail-container {
-    background-color: #1a1a1a;
+    background-color: black;
     color: white;
-    border-radius: 12px;
-    padding: 25px;
-    margin-top: 20px;
-    height: calc(100vh - 250px);
+    border-radius: 2%;
+    margin-left: 10px;
+    padding: 20px;
+    height: 100%;
     overflow-y: auto;
-    border: 1px solid #333;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: none;
+    font-family: "altivo", sans-serif;
 }
 
 .token-detail-placeholder {
-    background-color: #1a1a1a;
+    background-color: #191919;
     color: #aaa;
     text-align: center;
-    border-radius: 12px;
+    border-radius: 0;
     padding: 40px 20px;
-    margin-top: 20px;
-    height: calc(100vh - 250px);
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 1px dashed #333;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2);
+    border: none;
+    box-shadow: none;
+    font-family: "altivo", sans-serif;
 }
 
 .token-detail-placeholder h3 {
     margin-bottom: 15px;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 500;
+    color: #ffffff;
 }
 
 .token-detail-placeholder p {
@@ -313,16 +314,17 @@
     line-height: 1.5;
 }
 
+/* Token Detail Header */
 .token-detail-header {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     border-bottom: 1px solid #333;
     padding-bottom: 20px;
 }
 
 .token-detail-logo {
-    margin-right: 20px;
+    margin-right: 15px;
     padding: 5px;
     border-radius: 50%;
     background: linear-gradient(
@@ -334,96 +336,121 @@
 
 .token-detail-title h2 {
     margin: 0;
-    font-size: 28px;
+    font-size: 24px;
     color: white;
     font-weight: 600;
     letter-spacing: 0.5px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .token-detail-title p {
     margin: 5px 0 0;
     color: #bbb;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
 }
 
+/* Token Stat Grid */
 .token-detail-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-gap: 16px;
-    margin-bottom: 16px;
+    grid-gap: 12px;
+    margin-bottom: 12px;
 }
 
 .token-stat-item {
     background-color: #232323;
-    padding: 18px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
-    transition: all 0.2s ease;
-    border: 1px solid #2c2c2c;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    box-shadow: none;
 }
 
 .token-stat-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    border-color: #444;
+    transform: none;
+    box-shadow: none;
+    border: none;
 }
 
 .token-stat-label {
-    font-size: 14px;
+    font-size: 12px;
     color: #aaa;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 500;
 }
 
 .token-stat-value {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 500;
     color: #fff;
     letter-spacing: 0.5px;
 }
 
+/* Token Change Display */
 .token-stat-change {
     background-color: #232323;
-    padding: 18px;
-    border-radius: 10px;
+    padding: 15px;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
-    margin-bottom: 16px;
-    transition: all 0.2s ease;
-    border: 1px solid #2c2c2c;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+    border: none;
+    box-shadow: none;
+}
+
+.token-change-display {
+    display: flex;
+    align-items: center;
 }
 
 .token-stat-value-change {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
+.token-stat-value-change.positive {
+    color: #38d9a9;
+}
+
+.token-stat-value-change.negative {
+    color: #ff6b6b;
+}
+
+.change-indicator {
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+.change-indicator.positive {
+    color: #38d9a9;
+}
+
+.change-indicator.negative {
+    color: #ff6b6b;
+}
+
+/* Token ID / Contract Address */
 .token-detail-id {
     background-color: #232323;
-    padding: 18px;
-    border-radius: 10px;
-    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 0;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
-    border: 1px solid #2c2c2c;
+    border: none;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 .token-id-label {
     color: #aaa;
     margin-right: 10px;
-    font-size: 14px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-weight: 500;
@@ -433,7 +460,7 @@
 .token-id-value {
     color: #22ade2;
     font-family: monospace;
-    font-size: 15px;
+    font-size: 13px;
     overflow: hidden;
     text-overflow: ellipsis;
     flex: 1;
@@ -454,29 +481,30 @@
     color: #22ade2;
 }
 
+/* Action Buttons */
 .token-detail-actions {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
 }
 
 .token-action-button {
-    padding: 16px;
-    border-radius: 10px;
+    padding: 12px;
+    border-radius: 0;
     text-align: center;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     letter-spacing: 0.5px;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 }
 
 .token-action-button i {
-    margin-right: 10px;
+    margin-right: 8px;
 }
 
 .token-action-button.trade {
@@ -488,46 +516,29 @@
 }
 
 .token-action-button.view {
-    background-color: #2c2c2c;
+    background-color: #232323;
     color: white;
-    border: 1px solid #444;
+    border: none;
 }
 
 .token-action-button:hover {
-    transform: translateY(-2px);
+    transform: none;
     filter: brightness(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-/* For small screens */
-@media (max-width: 768px) {
-    .token-detail-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .token-detail-title h2 {
-        font-size: 24px;
-    }
-
-    .token-detail-logo img {
-        width: 50px;
-        height: 50px;
-    }
+    box-shadow: none;
 }
 
 /* Scrollbar styling */
 .token-detail-container::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .token-detail-container::-webkit-scrollbar-track {
-    background: #1a1a1a;
-    border-radius: 10px;
+    background: #191919;
 }
 
 .token-detail-container::-webkit-scrollbar-thumb {
     background: #333;
-    border-radius: 10px;
+    border-radius: 0;
 }
 
 .token-detail-container::-webkit-scrollbar-thumb:hover {
@@ -940,4 +951,194 @@
 .transactions-table td {
     padding-top: 14px;
     padding-bottom: 14px;
+}
+
+/* Additional styles for consistency */
+
+/* App container */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #191919;
+}
+
+/* Selected token styling in dropdown */
+.selected-token-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.selected-token-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.selected-token-symbol {
+    font-weight: 500;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.dropdown-arrow {
+    margin-left: 8px;
+    font-size: 14px;
+    color: #888;
+}
+
+/* Dropdown search input */
+.dropdown-search {
+    background-color: #191919;
+    color: white;
+    border: 2px solid #00a3cc;
+    padding: 10px 15px;
+    width: 100%;
+    font-size: 14px;
+}
+
+.dropdown-search:focus {
+    outline: none;
+    border-color: #1cddd1;
+}
+
+/* Enhanced token row styling */
+.token-row {
+    transition: background-color 0.2s ease;
+}
+
+.token-row:hover,
+.token-row.hovered-row {
+    background-color: #262626 !important;
+}
+
+.token-row.selected-row {
+    background-color: rgba(28, 221, 209, 0.05) !important;
+    border-left: 3px solid #1cddd1;
+}
+
+/* Token icon container with selected indicator */
+.token-icon-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.selected-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, #22ade2, #1cddd1);
+    border-radius: 50%;
+}
+
+/* Token change percentage badge */
+.change-badge {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.change-badge.positive {
+    background-color: rgba(56, 217, 169, 0.15);
+    color: #38d9a9;
+}
+
+.change-badge.negative {
+    background-color: rgba(255, 107, 107, 0.15);
+    color: #ff6b6b;
+}
+
+/* Transaction table selected row */
+.transaction-row.selected-transaction {
+    background-color: rgba(28, 221, 209, 0.05) !important;
+}
+
+/* Highlighted token in swap column */
+.highlighted-token {
+    color: #22ade2;
+    font-weight: 600;
+}
+
+/* TVChart container */
+.TVChartContainer {
+    width: 100%;
+    height: 100%;
+}
+
+/* Scrollbar styling for consistency */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #191919;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
+
+/* Responsive enhancements */
+@media (max-width: 960px) {
+    .selected-token-display {
+        justify-content: flex-start;
+    }
+
+    .token-detail-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .token-detail-title h2 {
+        font-size: 20px;
+    }
+}
+
+/* No results message for token search */
+.no-tokens-found {
+    padding: 20px;
+    text-align: center;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Loading states */
+.loading-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #aaa;
+}
+
+.loading-indicator i {
+    margin-right: 10px;
+}
+
+/* Focus outline */
+*:focus {
+    outline-color: #22ade2;
+    outline-offset: 2px;
+}
+
+/* Font consistency */
+.font-header {
+    font-family: "altivo", sans-serif;
+    font-weight: 500;
+}
+
+.font-regular {
+    font-family: "altivo", sans-serif;
+    font-weight: 400;
 }
