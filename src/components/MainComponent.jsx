@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Grid,
-  Typography,
-  Button,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import { useTheme, useMediaQuery } from "@mui/material";
 import { TVChartContainer } from "./common/TVChartContainer";
 import Table from "./Table";
 import TokenDetail from "./TokenDetail";
@@ -36,47 +29,40 @@ const MainComponent = ({ initialSelectedToken }) => {
   };
 
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{
-        backgroundColor: "#191919",
-        paddingRight: "7vw",
-      }}
-    >
-      {/* Main content */}
-      <Grid
-        item
-        xs={isMenuOpen ? 9 : 12}
-        sx={{ transition: "width 0.5s", position: "relative" }}
-      >
-        {selectedToken != null ? (
-          <TVChartContainer
-            height={isMenuOpen ? 70 : 70}
-            symbol={selectedToken}
-          />
-        ) : (
-          <TVChartContainer height={isMenuOpen ? 70 : 70} symbol={"TFUEL"} />
-        )}
-        <Table
-          height={isMenuOpen ? 70 : 90}
-          onTokenSelect={handleTokenSelect}
-        />
-        {/* Collapse button */}
-        {isLargeScreen && (
-          <button className="menubutton" onClick={toggleMenu}>
-            <div style={{ marginTop: "-35%" }}>{isMenuOpen ? "›" : "‹"}</div>
-          </button>
-        )}
-      </Grid>
+    <div className="main-container">
+      {/* Top row with chart and details */}
+      <div className="top-row">
+        {/* Chart section */}
+        <div
+          className={`chart-container ${isMenuOpen ? "with-sidebar" : "full-width"}`}
+        >
+          {selectedToken != null ? (
+            <TVChartContainer selectedToken={selectedToken} />
+          ) : (
+            <TVChartContainer selectedToken={"TFUEL"} />
+          )}
 
-      {/* Token detail panel */}
-      {isMenuOpen && (
-        <Grid item xs={3} className="font-header">
-          <TokenDetail selectedToken={selectedToken} />
-        </Grid>
-      )}
-    </Grid>
+          {/* Toggle sidebar button - only visible on large screens */}
+          {isLargeScreen && (
+            <button className="sidebar-toggle" onClick={toggleMenu}>
+              {isMenuOpen ? "›" : "‹"}
+            </button>
+          )}
+        </div>
+
+        {/* Token detail sidebar */}
+        {isMenuOpen && (
+          <div className="sidebar-container">
+            <TokenDetail selectedToken={selectedToken} />
+          </div>
+        )}
+      </div>
+
+      {/* Full-width table row */}
+      <div className="table-row">
+        <Table onTokenSelect={handleTokenSelect} />
+      </div>
+    </div>
   );
 };
 

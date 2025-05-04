@@ -26,9 +26,11 @@ const TokenDetail = ({ selectedToken }) => {
             }
             alt={selectedToken.symbol}
             style={{
-              width: "50px",
-              height: "50px",
+              width: "60px",
+              height: "60px",
               borderRadius: selectedToken.logo ? "0" : "50%",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+              border: "2px solid #2a2a2a",
             }}
           />
         </div>
@@ -61,51 +63,63 @@ const TokenDetail = ({ selectedToken }) => {
             ${formatNumber(selectedToken.totalLiquidityUSD * 1)}
           </span>
         </div>
-        <div className="token-stat-item">
-          <span className="token-stat-label">24h Change</span>
-          <span
-            className="token-stat-value"
-            style={{
-              color:
-                ((selectedToken.volume24HrsETH * 1) /
-                  (selectedToken.tradeVolumeETH * 1)) *
-                  100 >
-                0
-                  ? "#449782"
-                  : "#cb4348",
-            }}
-          >
-            {(
+      </div>
+
+      <div className="token-stat-change">
+        <span className="token-stat-label">24h Change</span>
+        <span
+          className="token-stat-value-change"
+          style={{
+            color:
               ((selectedToken.volume24HrsETH * 1) /
                 (selectedToken.tradeVolumeETH * 1)) *
-              100
-            ).toFixed(2)}
-            %
-          </span>
-        </div>
+                100 >
+              0
+                ? "#38d9a9"
+                : "#ff6b6b",
+            fontWeight: "bold",
+          }}
+        >
+          {(
+            ((selectedToken.volume24HrsETH * 1) /
+              (selectedToken.tradeVolumeETH * 1)) *
+            100
+          ).toFixed(2)}
+          %
+        </span>
       </div>
 
       <div className="token-detail-id">
         <span className="token-id-label">Token ID:</span>
         <span className="token-id-value">{selectedToken.id}</span>
+        <button
+          className="copy-button"
+          onClick={() => {
+            navigator.clipboard.writeText(selectedToken.id);
+            alert("Token ID copied to clipboard");
+          }}
+          title="Copy to clipboard"
+        >
+          <i className="fa fa-copy"></i>
+        </button>
       </div>
 
       <div className="token-detail-actions">
         <a
-          className="token-action-button"
+          className="token-action-button trade"
           href={`https://swap.thetatoken.org/swap?outputCurrency=${selectedToken.id}`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          Trade on ThetaSwap
+          <i className="fa fa-exchange-alt"></i> Trade on ThetaSwap
         </a>
         <a
-          className="token-action-button"
+          className="token-action-button view"
           href={`https://explorer.thetatoken.org/tokens/${selectedToken.id}`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          View on Explorer
+          <i className="fa fa-external-link-alt"></i> View on Explorer
         </a>
       </div>
     </div>
