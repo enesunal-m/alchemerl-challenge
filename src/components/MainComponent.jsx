@@ -14,8 +14,8 @@ const MainComponent = ({ initialSelectedToken }) => {
   // Update the local state when initialSelectedToken changes
   useEffect(() => {
     if (initialSelectedToken) {
-      setSelectedToken(initialSelectedToken);
       console.log("MainComponent received token:", initialSelectedToken);
+      setSelectedToken(initialSelectedToken);
     }
   }, [initialSelectedToken]);
 
@@ -25,7 +25,24 @@ const MainComponent = ({ initialSelectedToken }) => {
 
   const handleTokenSelect = (token) => {
     console.log("Token selected in MainComponent:", token);
-    setSelectedToken(token);
+
+    // Ensure we have full token data
+    if (token && (token.id || token.symbol)) {
+      setSelectedToken(token);
+
+      // Log detailed information about the token
+      console.log("Token details in MainComponent:", {
+        id: token.id,
+        symbol: token.symbol,
+        name: token.name,
+        price: token.derivedUSD,
+        volume24h: token.volume24HrsUSD,
+        marketCap: token.tradeVolumeUSD,
+        liquidity: token.totalLiquidityUSD,
+      });
+    } else {
+      console.warn("Received invalid token data in MainComponent:", token);
+    }
   };
 
   return (

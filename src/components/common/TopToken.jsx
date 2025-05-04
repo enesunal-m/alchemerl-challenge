@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { checkImg } from "../../utils/funcs";
 import { svg2img } from "../../utils/randomAvatar";
 import { removeW } from "../../utils/funcs";
+import { useSelector } from "react-redux";
 
 const TopToken = ({ itemData, onTokenSelect }) => {
   const [imageExists, setImageExists] = useState(false);
   const tokenRef = useRef(null);
+  const tokenList = useSelector((state) => state.tokenReducer.tokenList || []);
 
   useEffect(() => {
     const isOverflowed =
@@ -18,14 +20,22 @@ const TopToken = ({ itemData, onTokenSelect }) => {
   }, [itemData.symbol]);
 
   const handleClick = () => {
-    if (onTokenSelect && itemData.id) {
-      // Log the token data to console
-      console.log("Token selected:", itemData);
-      console.log("Token ID:", itemData.id);
-      console.log("Token Symbol:", itemData.symbol);
+    // Find the complete token data from the tokenList
+    if (itemData.symbol) {
+      // Use symbol to find the full token data
+      const fullTokenData = tokenList.find(
+        (token) => token.symbol === itemData.symbol,
+      );
 
-      // Pass the token data to the parent component
-      onTokenSelect(itemData);
+      if (fullTokenData) {
+        console.log("TopToken selected with complete data:", fullTokenData);
+        // Pass the complete token data to the parent component
+        onTokenSelect && onTokenSelect(fullTokenData);
+      } else {
+        console.log("Token selected, but full data not found:", itemData);
+        // Pass what we have if full data isn't available
+        onTokenSelect && onTokenSelect(itemData);
+      }
     }
   };
 
@@ -34,7 +44,7 @@ const TopToken = ({ itemData, onTokenSelect }) => {
       ref={tokenRef}
       className="token-item font-header top-token"
       onClick={handleClick}
-      style={{ cursor: itemData.id ? "pointer" : "default" }}
+      style={{ cursor: itemData.symbol ? "pointer" : "default" }}
     >
       <div className="token-element">{itemData.num}</div>
       <img

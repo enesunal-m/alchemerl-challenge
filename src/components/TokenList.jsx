@@ -105,23 +105,31 @@ const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
   };
 
   const handleTokenSelection = (token) => {
-    setSelectedToken(token);
+    // Important: Make sure to pass the complete token object
+    // Find the full token data from tokenList if we don't have all fields
+    let fullTokenData = token;
+
+    if (!token.derivedUSD && tokenList && tokenList.length > 0) {
+      const matchedToken = tokenList.find(
+        (t) => t.id === token.id || t.symbol === token.symbol,
+      );
+
+      if (matchedToken) {
+        fullTokenData = matchedToken;
+      }
+    }
+
+    console.log("Token selected in TokenList component:", fullTokenData);
+
+    // Update local state
+    setSelectedToken(fullTokenData);
     handleSaveClick();
 
-    // Add detailed logging
-    console.log("Token selected from TokenList:", token);
-    console.log("Token details:", {
-      id: token.id,
-      symbol: token.symbol,
-      name: token.name,
-      price: token.derivedUSD,
-      volume24h: token.volume24HrsUSD,
-      marketCap: token.tradeVolumeUSD,
-      liquidity: token.totalLiquidityUSD,
-    });
-
     // Pass the token data up to the parent component
-    onTokenSelect && onTokenSelect(token);
+    if (onTokenSelect) {
+      console.log("Propagating token selection to parent:", fullTokenData);
+      onTokenSelect(fullTokenData);
+    }
   };
 
   const handleSaveClick = () => {
@@ -136,6 +144,12 @@ const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Handle selection from the top token list
+  const handleTopTokenSelection = (token) => {
+    console.log("Token selected from top tokens:", token);
+    handleTokenSelection(token);
+  };
 
   // Prepare the display for the selected token dropdown button
   const getTokenDisplayText = () => {
@@ -176,7 +190,7 @@ const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
       />
       <TopTokenList
         tokenList={limitedTokenList}
-        onTokenSelect={handleTokenSelection}
+        onTokenSelect={handleTopTokenSelection}
         selectedToken={selectedToken}
       />
       <div

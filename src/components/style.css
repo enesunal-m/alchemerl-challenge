@@ -140,8 +140,6 @@
 .tokenlist-background {
     background-color: #191919;
     width: 100%;
-    padding-left: 2vw;
-    padding-right: 2vw;
     padding-top: 0.5vw;
     padding-bottom: 0.5vw;
     display: flex;
@@ -612,7 +610,6 @@
 .sidebar-container {
     width: 25%;
     height: 100%;
-    padding: 0 20px 0 0;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -622,7 +619,6 @@
     width: 100%;
     flex: 1;
     min-height: 400px;
-    max-height: calc(50vh - 20px);
     overflow: auto;
 }
 
@@ -769,6 +765,8 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
+    min-height: 400px;
+    max-height: calc(50vh - 20px);
 }
 
 .transactions-table {
@@ -976,6 +974,8 @@
     flex-direction: column;
     min-height: 100vh;
     background-color: #191919;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /* Selected token styling in dropdown */
