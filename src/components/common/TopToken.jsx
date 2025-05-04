@@ -19,7 +19,12 @@ const TopToken = ({ itemData, onTokenSelect }) => {
 
   const handleClick = () => {
     if (onTokenSelect && itemData.id) {
-      console.log("Top token clicked:", itemData);
+      // Log the token data to console
+      console.log("Token selected:", itemData);
+      console.log("Token ID:", itemData.id);
+      console.log("Token Symbol:", itemData.symbol);
+
+      // Pass the token data to the parent component
       onTokenSelect(itemData);
     }
   };

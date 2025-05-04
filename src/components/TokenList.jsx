@@ -107,6 +107,20 @@ const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
   const handleTokenSelection = (token) => {
     setSelectedToken(token);
     handleSaveClick();
+
+    // Add detailed logging
+    console.log("Token selected from TokenList:", token);
+    console.log("Token details:", {
+      id: token.id,
+      symbol: token.symbol,
+      name: token.name,
+      price: token.derivedUSD,
+      volume24h: token.volume24HrsUSD,
+      marketCap: token.tradeVolumeUSD,
+      liquidity: token.totalLiquidityUSD,
+    });
+
+    // Pass the token data up to the parent component
     onTokenSelect && onTokenSelect(token);
   };
 

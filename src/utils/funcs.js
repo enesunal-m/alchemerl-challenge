@@ -8,14 +8,23 @@ const checkImg = async (imgUrl) => {
 };
 
 function formatNumber(number) {
-  if (Math.abs(number) >= 1.0e9) {
-    return (number / 1.0e9).toFixed(2) + "B";
-  } else if (Math.abs(number) >= 1.0e6) {
-    return (number / 1.0e6).toFixed(2) + "M";
-  } else if (Math.abs(number) >= 1.0e3) {
-    return (number / 1.0e3).toFixed(2) + "K";
+  // Check if number is undefined, null, or not a number
+  if (number === undefined || number === null || isNaN(number)) {
+    return "0.00"; // Return a default value
+  }
+
+  // Convert to number if it's a string
+  const value = typeof number === "string" ? parseFloat(number) : number;
+
+  // Format based on magnitude
+  if (Math.abs(value) >= 1.0e9) {
+    return (value / 1.0e9).toFixed(2) + "B";
+  } else if (Math.abs(value) >= 1.0e6) {
+    return (value / 1.0e6).toFixed(2) + "M";
+  } else if (Math.abs(value) >= 1.0e3) {
+    return (value / 1.0e3).toFixed(2) + "K";
   } else {
-    return number.toFixed(2);
+    return value.toFixed(2);
   }
 }
 

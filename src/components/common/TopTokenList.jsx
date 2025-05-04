@@ -9,12 +9,24 @@ const TopTokenList = ({ tokenList, onTokenSelect }) => {
 
   useEffect(() => {
     const listElement = listRef.current;
-    setIsOverFlowed(listElement.scrollWidth > listElement.clientWidth);
-  }, [tokenList, isOverflowed]);
+    const checkOverflow = () => {
+      if (listElement) {
+        setIsOverFlowed(listElement.scrollWidth > listElement.clientWidth);
+      }
+    };
+
+    checkOverflow();
+
+    // Add resize listener to recheck overflow
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [tokenList]);
 
   return (
     <div ref={listRef} className="tokenlist-body">
-      <div className={classNames({ tokenlist: 1, overflowed: isOverflowed })}>
+      <div
+        className={classNames({ tokenlist: true, overflowed: isOverflowed })}
+      >
         {tokenList.map((item, index) => (
           <TopToken key={index} itemData={item} onTokenSelect={onTokenSelect} />
         ))}

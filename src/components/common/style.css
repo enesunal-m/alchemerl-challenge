@@ -1,63 +1,73 @@
 .TVChartContainer {
-  height: calc(100vh);
+    height: calc(100vh);
 }
 
 .flowing-button {
-  position: relative;
-  overflow: hidden;
-  min-width: auto;
+    position: relative;
+    overflow: hidden;
+    min-width: auto;
 }
 
 .flowing-button .content {
-  white-space: nowrap;
-  display: inline-block;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .flowing-button .flow-text {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  white-space: nowrap;
-  animation: slide linear infinite;
-  animation-play-state: paused;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    white-space: nowrap;
+    animation: slide linear infinite;
+    animation-play-state: paused;
 }
 
 @keyframes slide {
-  0% {
-    transform: translateX(0%);
-  }
+    0% {
+        transform: translateX(0%);
+    }
 
-  100% {
-    transform: translateX(-100%);
-  }
+    100% {
+        transform: translateX(-100%);
+    }
 }
 
 @keyframes textslide {
-  0% {
-    transform: translateX(50%);
-  }
-  100% {
-    transform: translateX(-80%);
-  }
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-100% + 100vw));
+    }
 }
 
 .tokenlist-body {
-  overflow-x: hidden; /* Enable horizontal scrolling if content overflows */
-  white-space: nowrap; /* Prevent content from wrapping */
+    overflow-x: hidden;
+    width: 70%;
+    position: relative;
 }
 
 .tokenlist {
-  display: flex; /* Display children horizontally */
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+    padding: 10px 0;
+    transition: transform 0.3s ease;
 }
 
 .tokenlist.overflowed {
-  animation: textslide 20s linear infinite; /* Apply the animation */
+    animation: textslide 20s linear infinite;
+    animation-fill-mode: forwards;
 }
 
-.tokenlist:hover {
-  animation-play-state: paused; /* Pause animation on hover */
+.tokenlist.overflowed:hover {
+    animation-play-state: paused;
 }
 
-.tokenlist .top-token {
-  margin-right: 10px; /* Add spacing between tokens */
+/* Make tokens stay aligned during the animation */
+.token-item {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-right: 20px;
+    align-items: center;
 }

@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { formatNumber, removeW } from "../utils/funcs";
 import { svg2img } from "../utils/randomAvatar";
 
 const TokenDetail = ({ selectedToken }) => {
+  // Log token details when a token is selected
+  useEffect(() => {
+    if (selectedToken) {
+      console.log("TokenDetail received token:", selectedToken);
+    }
+  }, [selectedToken]);
+
   if (!selectedToken) {
     return (
       <div className="token-detail-placeholder">
@@ -12,16 +19,27 @@ const TokenDetail = ({ selectedToken }) => {
     );
   }
 
-  console.log("Selected token details:", selectedToken);
-
-  // Calculate 24h change percentage
-  const changePercentage = (
-    ((selectedToken.volume24HrsETH * 1) / (selectedToken.tradeVolumeETH * 1)) *
-    100
-  ).toFixed(2);
+  // Safely calculate 24h change percentage with fallbacks for missing data
+  const vol24hrs = selectedToken.volume24HrsETH
+    ? parseFloat(selectedToken.volume24HrsETH)
+    : 0;
+  const totalVol = selectedToken.tradeVolumeETH
+    ? parseFloat(selectedToken.tradeVolumeETH)
+    : 1; // Avoid division by zero
+  const changePercentage = ((vol24hrs / totalVol) * 100).toFixed(2);
 
   // Determine if positive or negative for styling
   const isPositive = parseFloat(changePercentage) >= 0;
+
+  // Safely access all values with fallbacks
+  const price = selectedToken.derivedUSD || "0";
+  const volume24h = selectedToken.volume24HrsUSD || 0;
+  const marketCap = selectedToken.tradeVolumeUSD
+    ? selectedToken.tradeVolumeUSD * 1
+    : 0;
+  const liquidity = selectedToken.totalLiquidityUSD
+    ? selectedToken.totalLiquidityUSD * 1
+    : 0;
 
   return (
     <div className="token-detail-container">
@@ -33,7 +51,7 @@ const TokenDetail = ({ selectedToken }) => {
                 ? `https://assets.thetatoken.org/tokens/${selectedToken.logo}`
                 : svg2img(selectedToken)
             }
-            alt={selectedToken.symbol}
+            alt={selectedToken.symbol || "Token"}
             style={{
               width: "60px",
               height: "60px",
@@ -44,33 +62,27 @@ const TokenDetail = ({ selectedToken }) => {
           />
         </div>
         <div className="token-detail-title">
-          <h2>{removeW(selectedToken.symbol)}</h2>
-          <p>{selectedToken.name}</p>
+          <h2>{removeW(selectedToken.symbol || "Unknown")}</h2>
+          <p>{selectedToken.name || "Unknown Token"}</p>
         </div>
       </div>
 
       <div className="token-detail-stats">
         <div className="token-stat-item">
           <span className="token-stat-label">Price (USD)</span>
-          <span className="token-stat-value">${selectedToken.derivedUSD}</span>
+          <span className="token-stat-value">${price}</span>
         </div>
         <div className="token-stat-item">
           <span className="token-stat-label">24h Volume</span>
-          <span className="token-stat-value">
-            ${formatNumber(selectedToken.volume24HrsUSD)}
-          </span>
+          <span className="token-stat-value">${formatNumber(volume24h)}</span>
         </div>
         <div className="token-stat-item">
           <span className="token-stat-label">Market Cap</span>
-          <span className="token-stat-value">
-            ${formatNumber(selectedToken.tradeVolumeUSD * 1)}
-          </span>
+          <span className="token-stat-value">${formatNumber(marketCap)}</span>
         </div>
         <div className="token-stat-item">
           <span className="token-stat-label">Liquidity</span>
-          <span className="token-stat-value">
-            ${formatNumber(selectedToken.totalLiquidityUSD * 1)}
-          </span>
+          <span className="token-stat-value">${formatNumber(liquidity)}</span>
         </div>
       </div>
 
@@ -93,13 +105,16 @@ const TokenDetail = ({ selectedToken }) => {
 
       <div className="token-detail-id">
         <span className="token-id-label">Contract Address</span>
-        <span className="token-id-value">{selectedToken.id}</span>
+        <span className="token-id-value">{selectedToken.id || "Unknown"}</span>
         <button
           className="copy-button"
           onClick={(e) => {
             e.stopPropagation();
-            navigator.clipboard.writeText(selectedToken.id);
-            alert("Contract address copied to clipboard");
+            if (selectedToken.id) {
+              navigator.clipboard.writeText(selectedToken.id);
+              console.log("Contract address copied:", selectedToken.id);
+              alert("Contract address copied to clipboard");
+            }
           }}
           title="Copy to clipboard"
         >
@@ -108,22 +123,26 @@ const TokenDetail = ({ selectedToken }) => {
       </div>
 
       <div className="token-detail-actions">
-        <a
-          className="token-action-button trade"
-          href={`https://swap.thetatoken.org/swap?outputCurrency=${selectedToken.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fa fa-exchange-alt"></i> Trade on ThetaSwap
-        </a>
-        <a
-          className="token-action-button view"
-          href={`https://explorer.thetatoken.org/tokens/${selectedToken.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fa fa-external-link-alt"></i> View on Explorer
-        </a>
+        {selectedToken.id && (
+          <>
+            <a
+              className="token-action-button trade"
+              href={`https://swap.thetatoken.org/swap?outputCurrency=${selectedToken.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i className="fa fa-exchange-alt"></i> Trade on ThetaSwap
+            </a>
+            <a
+              className="token-action-button view"
+              href={`https://explorer.thetatoken.org/tokens/${selectedToken.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i className="fa fa-external-link-alt"></i> View on Explorer
+            </a>
+          </>
+        )}
       </div>
     </div>
   );
