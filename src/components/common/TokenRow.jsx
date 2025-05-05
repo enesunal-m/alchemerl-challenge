@@ -10,6 +10,25 @@ const TokenRow = ({ data, onTokenSelect, isSelected, onHover, isHovered }) => {
   const handleClick = () => {
     if (onTokenSelect) {
       console.log("Token row clicked:", data);
+      // Log complete token details for debugging
+      console.log("Token Details:", {
+        id: data.id,
+        symbol: data.symbol,
+        name: data.name || "Unknown",
+        price: data.derivedUSD || "0",
+        volume24h: data.volume24HrsUSD || 0,
+        marketCap: data.tradeVolumeUSD ? parseFloat(data.tradeVolumeUSD) : 0,
+        liquidity: data.totalLiquidityUSD
+          ? parseFloat(data.totalLiquidityUSD)
+          : 0,
+        changePercentage: data.tradeVolumeETH
+          ? (
+              ((data.volume24HrsETH * 1) / (data.tradeVolumeETH * 1)) *
+              100
+            ).toFixed(2)
+          : 0,
+      });
+
       onTokenSelect(data);
     }
   };
@@ -29,6 +48,7 @@ const TokenRow = ({ data, onTokenSelect, isSelected, onHover, isHovered }) => {
       onMouseEnter={() => onHover && onHover(true)}
       onMouseLeave={() => onHover && onHover(false)}
       className={`token-row ${isSelected ? "selected-row" : ""} ${isHovered ? "hovered-row" : ""}`}
+      data-token-id={data.id}
     >
       <td
         style={{

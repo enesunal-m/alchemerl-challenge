@@ -10,13 +10,23 @@ const TopToken = ({ itemData, onTokenSelect }) => {
   const tokenList = useSelector((state) => state.tokenReducer.tokenList || []);
 
   useEffect(() => {
-    const isOverflowed =
-      tokenRef.current.scrollWidth > tokenRef.current.clientWidth;
-    if (isOverflowed) {
-      tokenRef.current.classList.add("overflowed");
-    } else {
-      tokenRef.current.classList.remove("overflowed");
-    }
+    const checkOverflow = () => {
+      if (tokenRef.current) {
+        const isOverflowed =
+          tokenRef.current.scrollWidth > tokenRef.current.clientWidth;
+        if (isOverflowed) {
+          tokenRef.current.classList.add("overflowed");
+        } else {
+          tokenRef.current.classList.remove("overflowed");
+        }
+      }
+    };
+
+    checkOverflow();
+
+    // Add resize listener
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
   }, [itemData.symbol]);
 
   const handleClick = () => {
@@ -29,6 +39,20 @@ const TopToken = ({ itemData, onTokenSelect }) => {
 
       if (fullTokenData) {
         console.log("TopToken selected with complete data:", fullTokenData);
+        console.log("Token details:", {
+          id: fullTokenData.id,
+          symbol: fullTokenData.symbol,
+          name: fullTokenData.name || "Unknown",
+          price: fullTokenData.derivedUSD || "0",
+          volume24h: fullTokenData.volume24HrsUSD || 0,
+          marketCap: fullTokenData.tradeVolumeUSD
+            ? fullTokenData.tradeVolumeUSD * 1
+            : 0,
+          liquidity: fullTokenData.totalLiquidityUSD
+            ? fullTokenData.totalLiquidityUSD * 1
+            : 0,
+        });
+
         // Pass the complete token data to the parent component
         onTokenSelect && onTokenSelect(fullTokenData);
       } else {
@@ -45,6 +69,7 @@ const TopToken = ({ itemData, onTokenSelect }) => {
       className="token-item font-header top-token"
       onClick={handleClick}
       style={{ cursor: itemData.symbol ? "pointer" : "default" }}
+      data-token-symbol={itemData.symbol}
     >
       <div className="token-element">{itemData.num}</div>
       <img

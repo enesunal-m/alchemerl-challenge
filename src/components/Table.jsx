@@ -30,6 +30,7 @@ const Table = ({ onTokenSelect, selectedToken }) => {
   const handleRowClick = (rowData) => {
     if (!tokens || tokens.length === 0) return;
 
+    // Find token objects by symbols
     const token0 = tokens.find(
       (token) =>
         token.symbol.toLowerCase() === rowData.symbol0.toLowerCase() ||
@@ -46,18 +47,31 @@ const Table = ({ onTokenSelect, selectedToken }) => {
             rowData.symbol1.toLowerCase()),
     );
 
-    if (rowData.amount0In * 1) {
-      // Buy transaction - show token1
-      if (token1 && onTokenSelect) {
-        console.log("Selected token from transaction:", token1);
-        onTokenSelect(token1);
-      }
+    // Determine which token to select based on transaction type (buy/sell)
+    const selectedTokenObject = rowData.amount0In * 1 ? token1 : token0;
+
+    if (selectedTokenObject) {
+      console.log(
+        "Transaction row clicked, selecting token:",
+        selectedTokenObject,
+      );
+      console.log("Transaction data:", {
+        transactionType: rowData.amount0In * 1 ? "Buy" : "Sell",
+        symbol0: rowData.symbol0,
+        symbol1: rowData.symbol1,
+        amount0: rowData.amount0In * 1 ? rowData.amount0In : rowData.amount0Out,
+        amount1: rowData.amount1In * 1 ? rowData.amount1In : rowData.amount1Out,
+        amountUSD: rowData.amountUSD,
+        timestamp: rowData.timestamp,
+        selectedToken: selectedTokenObject.symbol,
+      });
+
+      onTokenSelect && onTokenSelect(selectedTokenObject);
     } else {
-      // Sell transaction - show token0
-      if (token0 && onTokenSelect) {
-        console.log("Selected token from transaction:", token0);
-        onTokenSelect(token0);
-      }
+      console.warn(
+        "Token not found in available tokens list:",
+        rowData.amount0In * 1 ? rowData.symbol1 : rowData.symbol0,
+      );
     }
   };
 
@@ -110,6 +124,7 @@ const Table = ({ onTokenSelect, selectedToken }) => {
                     onClick={() => handleRowClick(rowData)}
                     onMouseEnter={() => setHoveredRow(index)}
                     onMouseLeave={() => setHoveredRow(null)}
+                    data-transaction-id={rowData.id}
                   >
                     <td className="time-col">
                       {formatTimeDifference(rowData.timestamp * 1)}
@@ -137,7 +152,7 @@ const Table = ({ onTokenSelect, selectedToken }) => {
                       <span
                         className={
                           rowData.symbol0.toLowerCase() ===
-                          removeW(selectedToken?.symbol.toLowerCase())
+                          removeW(selectedToken?.symbol || "").toLowerCase()
                             ? "highlighted-token"
                             : ""
                         }
@@ -148,7 +163,7 @@ const Table = ({ onTokenSelect, selectedToken }) => {
                       <span
                         className={
                           rowData.symbol1.toLowerCase() ===
-                          removeW(selectedToken?.symbol.toLowerCase())
+                          removeW(selectedToken?.symbol || "").toLowerCase()
                             ? "highlighted-token"
                             : ""
                         }

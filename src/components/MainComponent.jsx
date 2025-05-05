@@ -15,6 +15,12 @@ const MainComponent = ({ initialSelectedToken }) => {
   useEffect(() => {
     if (initialSelectedToken) {
       console.log("MainComponent received token:", initialSelectedToken);
+      console.log("Updating selected token with:", {
+        id: initialSelectedToken.id,
+        symbol: initialSelectedToken.symbol,
+        name: initialSelectedToken.name || "Unknown",
+        price: initialSelectedToken.derivedUSD || "0",
+      });
       setSelectedToken(initialSelectedToken);
     }
   }, [initialSelectedToken]);
@@ -54,7 +60,10 @@ const MainComponent = ({ initialSelectedToken }) => {
           className={`chart-container ${isMenuOpen ? "with-sidebar" : "full-width"}`}
         >
           {selectedToken ? (
-            <TVChartContainer selectedToken={selectedToken} />
+            <TVChartContainer
+              selectedToken={selectedToken}
+              key={`chart-${selectedToken.symbol}`} // Add key to force re-render when token changes
+            />
           ) : (
             <TVChartContainer selectedToken={{ symbol: "THETA" }} />
           )}

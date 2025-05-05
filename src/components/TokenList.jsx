@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTokenListRequest } from "../redux/actions/tokenAction";
 import TokenListLogo from "../assets/img/Tokenbar-Logo.png";
-import TopToken from "./common/TopToken";
-import TokenTable from "./TokenTable";
 import TopTokenList from "./common/TopTokenList";
+import TokenTable from "./TokenTable";
 import { createTheme, useMediaQuery } from "@mui/material";
 import { removeW } from "../utils/funcs";
 import { svg2img } from "../utils/randomAvatar";
@@ -65,11 +64,22 @@ const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
   });
 
   useEffect(() => {
-    setFilteredTokenList(tokenList || []);
-  }, [tokenList]);
+    if (loading) {
+      console.log("TokenList: Loading token data...");
+    } else if (error) {
+      console.error("TokenList: Error loading tokens:", error);
+    } else if (tokenList && tokenList.length > 0) {
+      console.log(`TokenList: Loaded ${tokenList.length} tokens successfully`);
+      setFilteredTokenList(tokenList);
+    }
+  }, [tokenList, loading, error]);
 
   useEffect(() => {
     if (initialSelectedToken) {
+      console.log(
+        "TokenList: Received initialSelectedToken:",
+        initialSelectedToken,
+      );
       setSelectedToken(initialSelectedToken);
     }
   }, [initialSelectedToken]);
@@ -84,16 +94,20 @@ const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
 
     if (!tokenList) return;
 
-    setFilteredTokenList(
-      [...tokenList].filter((obj) => {
-        return (
-          obj.symbol.toLowerCase().includes(inputValue.toLowerCase()) ||
-          obj.id.toLowerCase().includes(inputValue.toLowerCase()) ||
-          (obj.name &&
-            obj.name.toLowerCase().includes(inputValue.toLowerCase()))
-        );
-      }),
+    // Filter tokens by search text
+    const filtered = [...tokenList].filter((obj) => {
+      return (
+        // Case-insensitive search
+        obj.symbol.toLowerCase().includes(inputValue.toLowerCase()) ||
+        obj.id.toLowerCase().includes(inputValue.toLowerCase()) ||
+        (obj.name && obj.name.toLowerCase().includes(inputValue.toLowerCase()))
+      );
+    });
+
+    console.log(
+      `TokenList: Filtered to ${filtered.length} tokens matching "${inputValue}"`,
     );
+    setFilteredTokenList(filtered);
   };
 
   const divRef = useRef(null);
@@ -120,6 +134,19 @@ const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
     }
 
     console.log("Token selected in TokenList component:", fullTokenData);
+    console.log("Token details:", {
+      id: fullTokenData.id,
+      symbol: fullTokenData.symbol,
+      name: fullTokenData.name || "Unknown",
+      price: fullTokenData.derivedUSD || "0",
+      volume24h: fullTokenData.volume24HrsUSD || 0,
+      marketCap: fullTokenData.tradeVolumeUSD
+        ? fullTokenData.tradeVolumeUSD * 1
+        : 0,
+      liquidity: fullTokenData.totalLiquidityUSD
+        ? fullTokenData.totalLiquidityUSD * 1
+        : 0,
+    });
 
     // Update local state
     setSelectedToken(fullTokenData);
@@ -139,6 +166,7 @@ const TokenList = ({ onTokenSelect, initialSelectedToken }) => {
   };
 
   useEffect(() => {
+    // Add click outside handler
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);

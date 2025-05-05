@@ -7,6 +7,20 @@ const TokenDetail = ({ selectedToken }) => {
   useEffect(() => {
     if (selectedToken) {
       console.log("TokenDetail received token:", selectedToken);
+      console.log("TokenDetail rendering with data:", {
+        id: selectedToken.id,
+        symbol: selectedToken.symbol,
+        name: selectedToken.name || "Unknown",
+        price: selectedToken.derivedUSD || "0",
+        volume24h: selectedToken.volume24HrsUSD || 0,
+        marketCap: selectedToken.tradeVolumeUSD
+          ? selectedToken.tradeVolumeUSD * 1
+          : 0,
+        liquidity: selectedToken.totalLiquidityUSD
+          ? selectedToken.totalLiquidityUSD * 1
+          : 0,
+        logo: selectedToken.logo || "Using generated avatar",
+      });
     }
   }, [selectedToken]);
 

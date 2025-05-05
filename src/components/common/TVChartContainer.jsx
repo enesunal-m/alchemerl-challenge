@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { removeW } from "../../utils/funcs";
 
 export function TVChartContainer({
   height = 60, // height in viewport-height units
@@ -7,13 +8,33 @@ export function TVChartContainer({
   interval = "D", // daily bars
 }) {
   const containerRef = useRef();
-  let symbol = selectedToken.symbol;
+  const widgetRef = useRef(null);
+  const containerId = `tv_chart_container_${selectedToken?.symbol || "default"}`;
 
   useEffect(() => {
-    symbol = selectedToken.symbol;
-    if (selectedToken.name && selectedToken.name.includes("Wrapped")) {
-      symbol = symbol.replace("W", "");
+    // Clean up any previous instance
+    if (widgetRef.current) {
+      try {
+        widgetRef.current.remove();
+        widgetRef.current = null;
+      } catch (error) {
+        console.error("Error removing previous chart instance:", error);
+      }
     }
+
+    // Prepare symbol from token data
+    let symbol = selectedToken?.symbol || "THETA";
+
+    // Remove the 'W' prefix for wrapped tokens
+    if (selectedToken?.name && selectedToken.name.includes("Wrapped")) {
+      symbol = removeW(symbol);
+    }
+
+    console.log("TVChartContainer: Rendering chart for token:", {
+      symbol: symbol,
+      tokenId: selectedToken?.id,
+      originalSymbol: selectedToken?.symbol,
+    });
 
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/tv.js";
@@ -21,9 +42,13 @@ export function TVChartContainer({
     document.body.appendChild(script);
 
     script.onload = () => {
-      if (window.TradingView) {
-        new window.TradingView.widget({
-          container_id: containerRef.current.id,
+      if (window.TradingView && containerRef.current) {
+        console.log(
+          `TVChartContainer: Creating widget for ${symbol}USD in container with id: ${containerId}`,
+        );
+
+        widgetRef.current = new window.TradingView.widget({
+          container_id: containerId,
           autosize: true,
           symbol: `${symbol}USD`, // e.g. "THETAUSD"
           interval, // "D", "60", "30", etc.
@@ -37,20 +62,32 @@ export function TVChartContainer({
           hotlist: true,
           withdateranges: true,
         });
+      } else {
+        console.error(
+          "TVChartContainer: TradingView not available or container not found",
+        );
       }
     };
 
-    // 3) cleanup when unmounting
+    // Cleanup when unmounting
     return () => {
-      document.body.removeChild(script);
-      // Note: the widget itself will automatically be removed when its container
-      // is removed from the DOM by React.
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+      if (widgetRef.current) {
+        try {
+          widgetRef.current.remove();
+          widgetRef.current = null;
+        } catch (error) {
+          console.error("Error cleaning up chart instance:", error);
+        }
+      }
     };
-  }, [selectedToken, interval, locale]);
+  }, [selectedToken, interval, locale, containerId]); // Re-create chart when token changes
 
   return (
     <div
-      id={`tv_chart_${symbol}`}
+      id={containerId}
       ref={containerRef}
       style={{ width: "100%", height: `${height}vh` }}
     />
