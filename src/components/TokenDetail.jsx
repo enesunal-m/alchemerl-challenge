@@ -141,7 +141,7 @@ const TokenDetail = ({ selectedToken }) => {
           <>
             <a
               className="token-action-button trade"
-              href={`https://swap.thetatoken.org/swap?outputCurrency=${selectedToken.id}`}
+              href={`https://thetaswap.org/swap?tokenAddressOutput=${selectedToken.id}`}
               target="_blank"
               rel="noopener noreferrer"
             >
